@@ -30,7 +30,7 @@ class IssueAction extends AbstractAction
 
     /**
      * @param $issueId
-     * @return array
+     * @return IssueChangeGroup[]
      */
     public function getChanges($issueId)
     {
@@ -48,23 +48,25 @@ class IssueAction extends AbstractAction
     }
 
     /**
+     * @param string $projectId
      * @param string $searchStr
      * @param int $max
      * @param int $after
+     * @param null|int $updatedAfter
      * @return array
      */
-    public function getIssuesBySearch($searchStr, $max = 10, $after = 0/*, $updatedAfter = null*/)
+    public function getIssuesByProjectSearch($projectId, $searchStr, $max = 10, $after = 0, $updatedAfter = null)
     {
         $queryString = new QueryString();
         $queryString->add('filter', $searchStr);
         $queryString->add('max', $max);
         $queryString->add('after', $after);
-//        if (!is_null($updatedAfter)) {
-//            $queryString->add('updatedAfter', $updatedAfter);
-//        }
-        $issuesFound = $this->performAction(self::TYPE_GET, array(), $queryString);
+        if (!is_null($updatedAfter)) {
+            $queryString->add('updatedAfter', $updatedAfter);
+        }
+        $issuesFound = $this->performAction(self::TYPE_GET, array('byproject', $projectId), $queryString);
         $issues = array();
-        foreach ($issuesFound['issue'] as $issueArray) {
+        foreach ($issuesFound as $issueArray) {
             $issue = new Issue();
             $issue->populate($issueArray);
             $issues[] = $issue;

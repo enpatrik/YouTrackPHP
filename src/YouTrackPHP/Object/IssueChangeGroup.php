@@ -8,7 +8,7 @@ class IssueChangeGroup extends AbstractObject
     const COMMENTS = 'comments';
     const CHANGES = 'changes';
 
-    /** @var array */
+    /** @var IssueChange[] */
     protected $changes;
 
     /**
@@ -36,7 +36,7 @@ class IssueChangeGroup extends AbstractObject
      */
     public function addChange(IssueChange $issueChange)
     {
-        $this->changes[] = $issueChange;
+        $this->changes[ $issueChange->getName() ] = $issueChange;
     }
 
     /**
@@ -45,5 +45,25 @@ class IssueChangeGroup extends AbstractObject
     public function getChanges()
     {
         return $this->changes;
+    }
+
+    /**
+     * @param string $name
+     * @return IssueChange
+     */
+    public function getChangeByName($name)
+    {
+        if (isset($this->changes[$name])) {
+            return $this->changes[$name];
+        }
+        return null;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getUpdated()
+    {
+        return $this->getProperty(self::UPDATED);
     }
 }

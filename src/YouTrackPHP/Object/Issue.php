@@ -21,6 +21,7 @@ class Issue extends AbstractObject
     const COMMENTS = 'comments';	                    //Represents issue comment (see Get comments of an issue)
     const TAG = 'tag';	                            //Tags, accessible to logged in user
     const STATE = 'State';
+    const ASSIGNEE = 'Assignee';
     const FIX_VERSIONS = 'Fix Versions';
     const PRIORITY = 'Priority';
     const SUBSYSTEM = 'Subsystem';

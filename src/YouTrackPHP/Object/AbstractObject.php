@@ -26,20 +26,24 @@ abstract class AbstractObject
     public abstract function populateFromArray(array $arr);
 
     /**
-     * @param $name
-     * @param $value
+     * @param string $name
+     * @param mixed $value
      */
     public function addProperty($name, $value)
     {
         $this->properties[$name] = $value;
     }
 
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
     public function getProperty($name)
     {
         if (isset($this->properties[$name])) {
             return $this->properties[$name];
         }
-        throw new \Exception('Property not found: ' . $name);
+        return null;
     }
 
     /**

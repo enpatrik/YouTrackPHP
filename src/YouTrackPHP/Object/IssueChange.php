@@ -16,4 +16,28 @@ class IssueChange extends AbstractObject
             $this->addProperty($name, $value);
         }
     }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getProperty(self::NAME);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOldValue()
+    {
+        return $this->getProperty(self::OLD_VALUE);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNewValue()
+    {
+        return $this->getProperty(self::NEW_VALUE);
+    }
 }
