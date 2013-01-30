@@ -1,7 +1,7 @@
 <?php
 namespace YouTrackPHP\Object;
 
-class Issue extends AbstractObject
+abstract class AbstractIssue extends AbstractObject implements IssueObject
 {
     const ID = 'id';                                  //Issue id in database
     const JIRA_ID = 'jiraId';	                        //If issue was imported from Jira, represents id, that it have in Jira
@@ -49,5 +49,20 @@ class Issue extends AbstractObject
                 $this->addProperty($name, $value);
             }
         }
+    }
+
+    public function getId()
+    {
+        return $this->getProperty(self::ID);
+    }
+
+    public function getCreated()
+    {
+        return $this->getProperty(self::CREATED);
+    }
+
+    public function getUpdated()
+    {
+        return $this->getProperty(self::UPDATED);
     }
 }

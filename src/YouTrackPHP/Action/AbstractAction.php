@@ -3,31 +3,30 @@ namespace YouTrackPHP\Action;
 
 use Guzzle\Http\Client;
 use Guzzle\Http\Message\Response;
-use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\QueryString;
+use YouTrackPHP\Object\ObjectCreator;
 
 abstract class AbstractAction
 {
-    const TYPE_GET = 'get';
-    const TYPE_POST = 'post';
-    const TYPE_DELETE = 'delete';
-    const TYPE_PUT = 'put';
-    protected static $types = array(self::TYPE_GET, self::TYPE_POST, self::TYPE_DELETE, self::TYPE_PUT);
-
     const RESPONSE_TYPE_JSON = 'json';
+    /** @var array */
     protected static $responseTypes = array(self::RESPONSE_TYPE_JSON);
+    /** @var string */
     protected $responseType;
-
-    /** @var \Guzzle\Http\Client */
+    /** @var Client */
     protected $client;
+    /** @var ObjectCreator */
+    protected $objectCreator;
 
     /**
      * @param Client $client
+     * @param ObjectCreator $objectCreator
      * @param string $responseType
      */
-    public function __construct(Client $client, $responseType = self::RESPONSE_TYPE_JSON)
+    public function __construct(Client $client, ObjectCreator $objectCreator, $responseType = self::RESPONSE_TYPE_JSON)
     {
         $this->setClient($client);
+        $this->setObjectCreator($objectCreator);
         $this->setResponseType(self::RESPONSE_TYPE_JSON);
     }
 
@@ -46,6 +45,14 @@ abstract class AbstractAction
     }
 
     /**
+     * @param ObjectCreator $objectCreator
+     */
+    public function setObjectCreator(ObjectCreator $objectCreator)
+    {
+        $this->objectCreator = $objectCreator;
+    }
+
+    /**
      * @param string $responseType
      */
     public function setResponseType($responseType)
@@ -55,38 +62,20 @@ abstract class AbstractAction
 
     /**
      * @param array $subUrlDirectories
-     * @param QueryString|null $queryString
+     * @param QueryString|null $getParams
      * @return string
      */
-    public function createRequestURL($subUrlDirectories = array(), QueryString $queryString = null)
+    public function createRequestURL($subUrlDirectories = array(), QueryString $getParams = null)
     {
         $subUrlDirectories = (array)$subUrlDirectories;
         $url = $this->getObjectUrl();
         if (!empty($subUrlDirectories)) {
             $url .= '/' . implode('/', $subUrlDirectories);
         }
-        if ($queryString instanceof QueryString && $queryString->count() > 0) {
-            $url .= $queryString->__toString();
+        if ($getParams instanceof QueryString && $getParams->count() > 0) {
+            $url .= $getParams->__toString();
         }
         return $url;
-    }
-
-    /**
-     * @param $type
-     * @param array $subUrlDirectories
-     * @param QueryString $queryString
-     * @return \Guzzle\Http\Message\RequestInterface
-     * @throws \Exception
-     */
-    public function createRequest($type, $subUrlDirectories = array(), QueryString $queryString = null)
-    {
-        $url = $this->createRequestURL($subUrlDirectories, $queryString);
-        switch ($type) {
-            case self::TYPE_GET:
-                return $this->client->get($url);
-            default:
-                throw new \Exception('Unknown type: ' . $type);
-        }
     }
 
     /**
@@ -104,17 +93,34 @@ abstract class AbstractAction
         }
     }
 
-    /**
-     * @param string $type
-     * @param array $subUrlDirectories
-     * @param QueryString $queryString
-     * @return mixed
-     */
-    public function performAction($type, $subUrlDirectories = array(), QueryString $queryString = null)
-    {
-        $request = $this->createRequest($type, $subUrlDirectories, $queryString);
-        $response = $request->send();
-        $result = $this->convertResponse($response);
-        return $result;
-    }
+//    /**
+//     * @param array $subUrlDirectories
+//     * @param QueryString $getParams
+//     * @return mixed
+//     */
+//    public function sendGet($subUrlDirectories = array(), QueryString $getParams = null)
+//    {
+//        $url = $this->createRequestURL($subUrlDirectories, $getParams);
+//        $request = $this->client->get($url);
+//        $response = $request->send();
+//        $result = $this->convertResponse($response);
+//        return $result;
+//    }
+//
+//    /**
+//     * @param array $subUrlDirectories
+//     * @param QueryString $getParams
+//     * @param QueryString $postParams
+//     * @internal param array $postArray
+//     * @return mixed
+//     */
+//    public function sendPost($subUrlDirectories = array(), QueryString $getParams = null, QueryString $postParams = null)
+//    {
+//        $url = $this->createRequestURL($subUrlDirectories, $getParams);
+//        $request = $this->client->post($url);
+//        $request->addPostFields($postParams);
+//        $response = $request->send();
+//        $result = $this->convertResponse($response);
+//        return $result;
+//    }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace YouTrackPHP\Action;
 
-use YouTrackPHP\Object\Issue;
+use YouTrackPHP\Object\IssueObject;
 use Guzzle\Http\QueryString;
 use YouTrackPHP\Object\IssueChangeGroup;
 use YouTrackPHP\Action\AbstractAction;
@@ -18,12 +18,14 @@ class IssueAction extends AbstractAction
 
     /**
      * @param $issueId
-     * @return Issue
+     * @return IssueObject
      */
     public function getById($issueId)
     {
-        $result = $this->performAction(self::TYPE_GET, array($issueId));
-        $issue = new Issue();
+        $url = $this->createRequestURL(array($issueId));
+        $response = $this->client->get($url)->send();
+        $result = $this->convertResponse($response);
+        $issue = $this->objectCreator->createIssue();
         $issue->populate($result);
         return $issue;
     }
@@ -34,7 +36,9 @@ class IssueAction extends AbstractAction
      */
     public function getChanges($issueId)
     {
-        $result = $this->performAction(self::TYPE_GET, array($issueId, 'changes'));
+        $url = $this->createRequestURL(array($issueId, 'changes'));
+        $response = $this->client->get($url)->send();
+        $result = $this->convertResponse($response);
         if (!isset($result['change'])) {
             return null;
         }
@@ -53,7 +57,7 @@ class IssueAction extends AbstractAction
      * @param int $max
      * @param int $after
      * @param null|int $updatedAfter
-     * @return array
+     * @return IssueObject[]
      */
     public function getIssuesByProjectSearch($projectId, $searchStr, $max = 10, $after = 0, $updatedAfter = null)
     {
@@ -64,10 +68,12 @@ class IssueAction extends AbstractAction
         if (!is_null($updatedAfter)) {
             $queryString->add('updatedAfter', $updatedAfter);
         }
-        $issuesFound = $this->performAction(self::TYPE_GET, array('byproject', $projectId), $queryString);
+        $url = $this->createRequestURL(array('byproject', $projectId), $queryString);
+        $response = $this->client->get($url)->send();
+        $result = $this->convertResponse($response);
         $issues = array();
-        foreach ($issuesFound as $issueArray) {
-            $issue = new Issue();
+        foreach ($result as $issueArray) {
+            $issue = $this->objectCreator->createIssue();
             $issue->populate($issueArray);
             $issues[] = $issue;
         }

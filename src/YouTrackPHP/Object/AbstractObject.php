@@ -53,4 +53,17 @@ abstract class AbstractObject
     {
         return $this->properties;
     }
+
+    /**
+     * @param $name
+     * @return mixed|null
+     */
+    public function getFirstPropertyValue($name)
+    {
+        $value = $this->getProperty($name);
+        if (is_array($value)) {
+            $value = reset($value);
+        }
+        return $value;
+    }
 }

@@ -1,0 +1,16 @@
+instance:
+  alias:
+    ActionFactory: "YouTrackPHP\Action\ActionFactory"
+    ObjectCreator: "YouTrackPHP\Object\ObjectCreator"
+    Client: "Guzzle\Http\Client"
+  Client:
+    injections:
+      setBaseUrl:
+        url: "http://localhost:8080/rest"
+      setDefaultHeaders:
+        headers:
+          Accept: "application/json"
+  ActionFactory:
+    parameters:
+      client: "Client"
+      objectCreator: "ObjectCreator"
