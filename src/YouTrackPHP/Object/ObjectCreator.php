@@ -52,7 +52,8 @@ class ObjectCreator
         if (! in_array($objectName, $this->availableObjectNames)) {
             throw new \Exception('Invalid object name:' . $objectName);
         } else if (isset($this->objectClasses[$objectName])) {
-            return new $this->objectClasses[$objectName];
+            $className = $this->objectClasses[$objectName];
+            return new $className;
         }
         $standardClassName = __NAMESPACE__ . "\\Standard\\" . $objectName;
         return new $standardClassName;

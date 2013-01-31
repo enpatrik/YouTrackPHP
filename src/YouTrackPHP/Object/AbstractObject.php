@@ -20,10 +20,13 @@ abstract class AbstractObject
     }
 
     /**
-     * @abstract
      * @param array $arr
+     * @throws \Exception
      */
-    public abstract function populateFromArray(array $arr);
+    public function populateFromArray(array $arr)
+    {
+        throw new \Exception('Need implementation');
+    }
 
     /**
      * @param string $name
