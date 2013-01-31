@@ -3,10 +3,18 @@
     "description":  "YouTrack PHP client",
     "keywords":     ["YouTrack", "PHP", "Client", "API"],
 
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.zendframework.com/"
+        }
+    ],
+
     "require": {
         "php":      ">=5.3.1",
         "guzzle/guzzle": "v3.1.0",
-        "zendframework/zendframework": "2.1.0",
+        "zendframework/zend-di": "2.1.0",
+        "zendframework/zend-config": "2.1.0",
         "lespoilus/spyc": "dev-master"
     },
 
