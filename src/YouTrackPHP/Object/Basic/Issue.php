@@ -1,7 +1,10 @@
 <?php
-namespace YouTrackPHP\Object;
+namespace YouTrackPHP\Object\Basic;
 
-abstract class AbstractIssue extends AbstractObject implements IssueObject
+use YouTrackPHP\Object\AbstractObject;
+use YouTrackPHP\Object\IssueObject;
+
+class Issue extends AbstractObject implements IssueObject
 {
     const ID = 'id';                                  //Issue id in database
     const JIRA_ID = 'jiraId';	                        //If issue was imported from Jira, represents id, that it have in Jira

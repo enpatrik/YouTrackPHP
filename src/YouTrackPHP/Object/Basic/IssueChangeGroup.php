@@ -1,7 +1,11 @@
 <?php
-namespace YouTrackPHP\Object;
+namespace YouTrackPHP\Object\Basic;
 
-class IssueChangeGroup extends AbstractObject
+use YouTrackPHP\Object\AbstractObject;
+use YouTrackPHP\Object\IssueChangeGroupObject;
+use YouTrackPHP\Object\IssueChangeObject;
+
+class IssueChangeGroup extends AbstractObject implements IssueChangeGroupObject
 {
     const UPDATER_NAME = 'updaterName';
     const UPDATED = 'updated';
@@ -10,17 +14,44 @@ class IssueChangeGroup extends AbstractObject
 
     /** @var IssueChange[] */
     protected $changes;
+    /** @var string */
+    protected $issueChangeClass;
+
+    /**
+     * @param string $className
+     */
+    public function setIssueChangeClass($className)
+    {
+        $this->issueChangeClass = $className;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIssueChangeClass()
+    {
+        return $this->issueChangeClass;
+    }
 
     /**
      * @param array $arr
+     * @throws \Exception
      */
     public function populateFromArray(array $arr)
     {
+        $issueChangeClass = $this->getIssueChangeClass();
+        if (!$issueChangeClass) {
+            throw new \Exception('Issue change class not set.');
+        } else if (!class_exists($issueChangeClass)) {
+            throw new \Exception('Issue change class does not exist: ' . $issueChangeClass);
+        }
+
         foreach ($arr as $name => $value) {
             if ($name === 'field') {
                 $this->populateFromArray($value);
             } elseif (isset($value['newValue'])) {
-                $issueChange = new IssueChange();
+                /** @var IssueChangeObject $issueChange */
+                $issueChange = new $issueChangeClass;
                 $issueChange->populateFromArray($value);
                 $this->addChange($issueChange);
             } elseif (isset($value['name']) && isset($value['value'])) {
@@ -32,9 +63,10 @@ class IssueChangeGroup extends AbstractObject
     }
 
     /**
-     * @param IssueChange $issueChange
+     * @param IssueChangeObject $issueChange
+     * @return mixed|void
      */
-    public function addChange(IssueChange $issueChange)
+    public function addChange(IssueChangeObject $issueChange)
     {
         $this->changes[ $issueChange->getName() ] = $issueChange;
     }
@@ -49,7 +81,7 @@ class IssueChangeGroup extends AbstractObject
 
     /**
      * @param string $name
-     * @return IssueChange
+     * @return IssueChangeObject
      */
     public function getChangeByName($name)
     {

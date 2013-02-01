@@ -5,8 +5,14 @@ namespace YouTrackPHP\Object;
 class ObjectCreator
 {
     const ISSUE = 'Issue';
+    const ISSUE_CHANGE = 'IssueChange';
+    const ISSUE_CHANGE_GROUP = 'IssueChangeGroup';
     /** @var array */
-    protected $availableObjectNames = array(self::ISSUE);
+    protected $availableObjectNames = array(
+        self::ISSUE,
+        self::ISSUE_CHANGE,
+        self::ISSUE_CHANGE_GROUP
+    );
     /** @var array */
     protected $objectClasses = array();
 
@@ -43,20 +49,37 @@ class ObjectCreator
     }
 
     /**
+     * @param string $objectName
+     * @return string
+     * @throws \Exception
+     */
+    public function getObjectClass($objectName)
+    {
+        if (! in_array($objectName, $this->availableObjectNames)) {
+            throw new \Exception('Invalid object name: ' . $objectName);
+        } else if (isset($this->objectClasses[$objectName])) {
+            $className = $this->objectClasses[$objectName];
+        } else {
+            // Standard
+            $className = __NAMESPACE__ . "\\Standard\\" . $objectName;
+        }
+
+        if (! class_exists($className)) {
+            throw new \Exception('Invalid class name: ' . $className);
+        }
+
+        return $className;
+    }
+
+    /**
      * @param $objectName
      * @return IssueObject
      * @throws \Exception
      */
     public function getNewObjectClass($objectName)
     {
-        if (! in_array($objectName, $this->availableObjectNames)) {
-            throw new \Exception('Invalid object name:' . $objectName);
-        } else if (isset($this->objectClasses[$objectName])) {
-            $className = $this->objectClasses[$objectName];
-            return new $className;
-        }
-        $standardClassName = __NAMESPACE__ . "\\Standard\\" . $objectName;
-        return new $standardClassName;
+        $className = $this->getObjectClass($objectName);
+        return new $className;
     }
 
     /**
@@ -65,5 +88,13 @@ class ObjectCreator
     public function createIssue()
     {
         return $this->getNewObjectClass(self::ISSUE);
+    }
+
+    public function createIssueChangeGroup()
+    {
+        /** @var IssueChangeGroupObject $issueChangeGroup */
+        $issueChangeGroup = $this->getNewObjectClass(self::ISSUE_CHANGE_GROUP);
+        $issueChangeGroup->setIssueChangeClass($this->getObjectClass(self::ISSUE_CHANGE));
+        return $issueChangeGroup;
     }
 }

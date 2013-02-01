@@ -3,7 +3,7 @@ namespace YouTrackPHP\Action;
 
 use YouTrackPHP\Object\IssueObject;
 use Guzzle\Http\QueryString;
-use YouTrackPHP\Object\IssueChangeGroup;
+use YouTrackPHP\Object\IssueChangeGroupObject;
 use YouTrackPHP\Action\AbstractAction;
 
 class IssueAction extends AbstractAction
@@ -32,7 +32,7 @@ class IssueAction extends AbstractAction
 
     /**
      * @param $issueId
-     * @return IssueChangeGroup[]
+     * @return IssueChangeGroupObject[]
      */
     public function getChanges($issueId)
     {
@@ -44,7 +44,7 @@ class IssueAction extends AbstractAction
         }
         $changeGroups = array();
         foreach ($result['change'] as $changeArray) {
-            $issueChangeGroup = new IssueChangeGroup();
+            $issueChangeGroup = $this->objectCreator->createIssueChangeGroup();
             $issueChangeGroup->populate($changeArray);
             $changeGroups[] = $issueChangeGroup;
         }

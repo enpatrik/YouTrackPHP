@@ -2,9 +2,9 @@
 
 namespace YouTrackPHP\Object\Standard;
 
-use YouTrackPHP\Object\AbstractIssue;
+use YouTrackPHP\Object\Basic\Issue as BasicIssue;
 
-class Issue extends AbstractIssue
+class Issue extends BasicIssue
 {
     public function getSummary()
     {

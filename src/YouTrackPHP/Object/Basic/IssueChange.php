@@ -1,7 +1,10 @@
 <?php
-namespace YouTrackPHP\Object;
+namespace YouTrackPHP\Object\Basic;
 
-class IssueChange extends AbstractObject
+use YouTrackPHP\Object\AbstractObject;
+use YouTrackPHP\Object\IssueChangeObject;
+
+class IssueChange extends AbstractObject implements IssueChangeObject
 {
     const NAME = 'name';
     const OLD_VALUE = 'oldValue';
