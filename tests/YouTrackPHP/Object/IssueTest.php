@@ -1,5 +1,5 @@
 <?php
-use YouTrackPHP\Object\Issue;
+use YouTrackPHP\Object\Standard\Issue;
 
 class IssueTest extends PHPUnit_Framework_TestCase
 {

@@ -1,10 +1,11 @@
 <?php
 namespace YouTrackPHP\Action;
 
-use YouTrackPHP\Object\IssueObject;
 use Guzzle\Http\QueryString;
-use YouTrackPHP\Object\IssueChangeGroupObject;
 use YouTrackPHP\Action\AbstractAction;
+use YouTrackPHP\Action\Result\IssueResult;
+use YouTrackPHP\Action\Result\IssueChangeResult;
+use YouTrackPHP\Action\Result\ActionResult;
 
 class IssueAction extends AbstractAction
 {
@@ -18,37 +19,25 @@ class IssueAction extends AbstractAction
 
     /**
      * @param $issueId
-     * @return IssueObject
+     * @return ActionResult
      */
     public function getById($issueId)
     {
         $url = $this->createRequestURL(array($issueId));
         $response = $this->client->get($url)->send();
-        $result = $this->convertResponse($response);
-        $issue = $this->objectCreator->createIssue();
-        $issue->populate($result);
-        return $issue;
+        return new IssueResult($response, $this->objectCreator);
     }
 
     /**
      * @param $issueId
-     * @return IssueChangeGroupObject[]
+     * @return ActionResult
      */
     public function getChanges($issueId)
     {
         $url = $this->createRequestURL(array($issueId, 'changes'));
         $response = $this->client->get($url)->send();
-        $result = $this->convertResponse($response);
-        if (!isset($result['change'])) {
-            return null;
-        }
-        $changeGroups = array();
-        foreach ($result['change'] as $changeArray) {
-            $issueChangeGroup = $this->objectCreator->createIssueChangeGroup();
-            $issueChangeGroup->populate($changeArray);
-            $changeGroups[] = $issueChangeGroup;
-        }
-        return $changeGroups;
+        $multipleObjects = true;
+        return new IssueChangeResult($response, $this->objectCreator, $multipleObjects);
     }
 
     /**
@@ -57,7 +46,7 @@ class IssueAction extends AbstractAction
      * @param int $max
      * @param int $after
      * @param null|int $updatedAfter
-     * @return IssueObject[]
+     * @return ActionResult
      */
     public function getIssuesByProjectSearch($projectId, $searchStr, $max = 10, $after = 0, $updatedAfter = null)
     {
@@ -70,13 +59,7 @@ class IssueAction extends AbstractAction
         }
         $url = $this->createRequestURL(array('byproject', $projectId), $queryString);
         $response = $this->client->get($url)->send();
-        $result = $this->convertResponse($response);
-        $issues = array();
-        foreach ($result as $issueArray) {
-            $issue = $this->objectCreator->createIssue();
-            $issue->populate($issueArray);
-            $issues[] = $issue;
-        }
-        return $issues;
+        $multipleObjects = true;
+        return new IssueResult($response, $this->objectCreator, $multipleObjects);
     }
 }

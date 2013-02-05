@@ -8,11 +8,6 @@ use YouTrackPHP\Object\ObjectCreator;
 
 abstract class AbstractAction
 {
-    const RESPONSE_TYPE_JSON = 'json';
-    /** @var array */
-    protected static $responseTypes = array(self::RESPONSE_TYPE_JSON);
-    /** @var string */
-    protected $responseType;
     /** @var Client */
     protected $client;
     /** @var ObjectCreator */
@@ -21,13 +16,11 @@ abstract class AbstractAction
     /**
      * @param Client $client
      * @param ObjectCreator $objectCreator
-     * @param string $responseType
      */
-    public function __construct(Client $client, ObjectCreator $objectCreator, $responseType = self::RESPONSE_TYPE_JSON)
+    public function __construct(Client $client, ObjectCreator $objectCreator)
     {
         $this->setClient($client);
         $this->setObjectCreator($objectCreator);
-        $this->setResponseType(self::RESPONSE_TYPE_JSON);
     }
 
     /**
@@ -53,14 +46,6 @@ abstract class AbstractAction
     }
 
     /**
-     * @param string $responseType
-     */
-    public function setResponseType($responseType)
-    {
-        $this->responseType = $responseType;
-    }
-
-    /**
      * @param array $subUrlDirectories
      * @param QueryString|null $getParams
      * @return string
@@ -77,50 +62,4 @@ abstract class AbstractAction
         }
         return $url;
     }
-
-    /**
-     * @param Response $response
-     * @return mixed
-     * @throws \Exception
-     */
-    public function convertResponse(Response $response)
-    {
-        switch ($this->responseType) {
-            case self::RESPONSE_TYPE_JSON:
-                return $response->json();
-            default:
-                throw new \Exception('Unknown response type: ' . $this->responseType);
-        }
-    }
-
-//    /**
-//     * @param array $subUrlDirectories
-//     * @param QueryString $getParams
-//     * @return mixed
-//     */
-//    public function sendGet($subUrlDirectories = array(), QueryString $getParams = null)
-//    {
-//        $url = $this->createRequestURL($subUrlDirectories, $getParams);
-//        $request = $this->client->get($url);
-//        $response = $request->send();
-//        $result = $this->convertResponse($response);
-//        return $result;
-//    }
-//
-//    /**
-//     * @param array $subUrlDirectories
-//     * @param QueryString $getParams
-//     * @param QueryString $postParams
-//     * @internal param array $postArray
-//     * @return mixed
-//     */
-//    public function sendPost($subUrlDirectories = array(), QueryString $getParams = null, QueryString $postParams = null)
-//    {
-//        $url = $this->createRequestURL($subUrlDirectories, $getParams);
-//        $request = $this->client->post($url);
-//        $request->addPostFields($postParams);
-//        $response = $request->send();
-//        $result = $this->convertResponse($response);
-//        return $result;
-//    }
 }

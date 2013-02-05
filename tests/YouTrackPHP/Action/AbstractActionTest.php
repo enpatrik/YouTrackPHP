@@ -44,29 +44,5 @@ class AbstractActionTest extends PHPUnit_Framework_TestCase
         $actualURL = $abstractAction->createRequestURL(array('give'), $queryString);
         $this->assertEquals($expectedUrl, $actualURL);
     }
-
-    public function testCreateRequestGet()
-    {
-        $baseUrl = 'http://test';
-        $subUrl = 'some/url';
-        $client = new Client();
-        $client->setBaseUrl($baseUrl);
-        /** @var $abstractAction PHPUnit_Framework_MockObject_MockObject */
-        $abstractAction = $this->getMockBuilder('YouTrackPHP\Action\AbstractAction')
-            ->setConstructorArgs(array($client))
-            ->setMethods(array('createRequestURL'))
-            ->getMockForAbstractClass()
-        ;
-        $abstractAction
-            ->expects($this->once())
-            ->method('createRequestURL')
-            ->will($this->returnValue($subUrl))
-        ;
-        /** @var $abstractAction AbstractAction */
-        /** @var $request RequestInterface */
-        $request = $abstractAction->createRequest(AbstractAction::TYPE_GET);
-        $this->assertEquals(RequestInterface::GET, $request->getMethod());
-        $this->assertEquals($baseUrl . '/' . $subUrl, $request->getUrl());
-    }
 }
 
